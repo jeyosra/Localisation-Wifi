@@ -4,9 +4,9 @@ plot(wifi)
 
 plot(wifi[, c(1:7, 8)])
 options(max.print=16000)
-is.na(wifi) #ucune valeur manquante
+is.na(wifi) #No Missed value
 
-n <- nrow(wifi) #taille echantillo,
+n <- nrow(wifi) #sample size
 n
 
 ptrain <- 0.7   #proportion d'apprentissage
@@ -16,7 +16,7 @@ Ytrain <- wifi[Itrain,8]
 Xtest <- wifi[-Itrain,1:7]
 Xtrain <- wifi[Itrain,1:7]
 
-#arbre aleatoire
+#Decision Tree
 library("tree")
 tree.fit <- tree(V8~.,data.frame(wifi),subset=Itrain,method="class")
 ypred1<-Predict(tree.fit,newdata=Xtest)
@@ -36,7 +36,7 @@ plot(tree.fit2)
 text(tree.fit2)
 
 
-#forêt aleatoire
+#Random Forest
 library("party")
 RF.fit <- cforest(V8~.,data.frame(wifi),subset=Itrain)
 Ytestpred.RF <- predict(RF.fit,newdata=Xtest,type="response")
@@ -54,9 +54,9 @@ risqueclassif.RF = mean(Ytestpred.RF!=Ytest)
 print(RF.fit)
 
 
-#reseaux de neurones
+#Neural Network
 
-#redefinition de plot sans dev.new()
+#redefinition of plot without dev.new ()
 plotnn <- function (x, rep = NULL, x.entry = NULL, x.out = NULL, radius = 0.15, 
                     arrow.length = 0.2, intercept = TRUE, intercept.factor = 0.4, 
                     information = TRUE, information.pos = 0.1, col.entry.synapse = "black", 
@@ -251,7 +251,7 @@ donnees_RN = data.frame(Xtrain,V8=Ytrain)
 
 #f <- as.formula(paste("V8 ~", paste(names(wifi)[1:7], collapse = " + ")))
 
-#1 couches cachees
+#1 hidden layer
 
 #RN.fit1 = neuralnet(f,donnees_RN,linear.output = FALSE)
 RN.fit1 = neuralnet(V8~V1+V2+V3+V4+V5+V6+V7,donnees_RN,linear.output = FALSE)
@@ -263,7 +263,7 @@ prob.RN.fit1 = compute(RN.fit1,Xtest)$net.result
 
 errorRN<-mean(round(prob.RN.fit1,digit=0)!=Ytest)
 
-#3 couches cachées
+#3 Hidden layers
 RN.fit3 =neuralnet(V8~V1+V2+V3+V4+V5+V6+V7,donnees_RN,linear.output = FALSE,hidden=3)
 plotnn(RN.fit3)
 Ytestpred.RN.fit3 = compute(RN.fit3,Xtest)$net.result
@@ -271,7 +271,7 @@ Ytestpred.RN.fit3 = compute(RN.fit3,Xtest)$net.result
 risqueclassif.RN.fit3 = mean(round(Ytestpred.RN.fit3,digit=0)!=Ytest)
 
 "-------------------------------------------------------------------------------"
-# k-PPV
+# kNN
 library(class)
 
 wifi.sc = data.frame(wifi) 
@@ -326,7 +326,7 @@ K <- 50
 kvect1 <- 1:K
 khat1 <- knnCV(Xtrain, Ytrain, kvect1)
 res1 <- knn(Xtrain,Xtest,Ytrain,khat1)
-# Erreur de classification 
+# Classification Error 
 mean(res1!=Ytest)
 
 knn3 = knn(Xtrain,Xtest,Ytrain, k=3)
