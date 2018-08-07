@@ -338,3 +338,77 @@ Ytestpred.svmlin=predict(svmlin ,Xtest)
 risqueclassif.svmlin= mean(Ytestpred.svmlin!=Ytest)
 print(svmlin)
 summary(svmlin)
+
+# un contre un
+dim(wifi)
+
+w1=wifi[1:500,]
+w2=wifi[501:1000,]
+w3=wifi[1001:1500,]
+w4=wifi[1501:2000,]  
+
+w2$V8[w2$V8==2]<- -1
+
+w3$V8[w3$V8==3]<- 1
+
+# 1 contre 2 
+w12<-rbind(w1,w2)
+w12.sc = data.frame(w12) 
+w12.sc[,-8] = scale(w12[,-8])
+
+n1=1000
+ptrain = 0.7
+Itrain1 = sample(n1,round(ptrain*n1))
+ntrain1 = length(Itrain1)
+ntest1 = n1 - ntrain1
+
+Xtest.w12 = w12.sc[-Itrain1,-8]
+Xtrain.w12 = w12.sc[Itrain1,-8]
+Ytest.w12 = w12[-Itrain1,8]
+Ytrain.w12  = w12[Itrain1,8]
+
+
+
+library("e1071")
+svmlin12 = svm(V8~., data=data.frame(Xtrain.w12,V8=Ytrain.w12),type="C-classification" ,kernel="linear")
+Ytestpred.svmlin12=predict(svmlin12 ,data.frame(x=Xtest.w12,y=Ytest.w12))
+risqueclassif.svmlin12 = mean(Ytestpred.svmlin12!=Ytest.w12)
+
+svmpol12 = svm(V8~., data=data.frame(Xtrain.w12,V8=Ytrain.w12),type="C-classification", kernel="polynomial")
+Ytestpred.svmpol12=predict(svmpol12 ,data.frame(x=Xtest.w12,y=Ytest.w12))
+risqueclassif.svmpol12 = mean(Ytestpred.svmpol12!=Ytest.w12)
+
+svmrad12 = svm(V8~., data=data.frame(Xtrain.w12,V8=Ytrain.w12),type="C-classification", kernel="radial")
+Ytestpred.svmrad12=predict(svmrad12 ,data.frame(x=Xtest.w12,y=Ytest.w12))
+risqueclassif.svmrad12 = mean(Ytestpred.svmrad12!=Ytest.w12)
+
+# 3 contre 2
+
+w23<-rbind(w2,w3)
+w23.sc = data.frame(w23) 
+w23.sc[,-8] = scale(w23[,-8])
+
+n1=1000
+ptrain = 0.7
+Itrain2 = sample(n1,round(ptrain*n1))
+ntrain2 = length(Itrain2)
+ntest2 = n1 - ntrain2
+
+Xtest.w23 = w23.sc[-Itrain2,-8]
+Xtrain.w23 = w23.sc[Itrain2,-8]
+Ytest.w23 = w23[-Itrain2,8]
+Ytrain.w23  = w23[Itrain2,8]
+
+svmlin23 = svm(V8~., data=data.frame(Xtrain.w23,V8=Ytrain.w23),type="C-classification", kernel="linear")
+Ytestpred.svmlin23=predict(svmlin23 ,data.frame(x=Xtest.w23,y=Ytest.w23))
+risqueclassif.svmlin23 = mean(Ytestpred.svmlin23!=Ytest.w23)
+
+svmpol23 = svm(V8~., data=data.frame(Xtrain.w23,V8=Ytrain.w23),type="C-classification", kernel="polynomial")
+Ytestpred.svmpol23=predict(svmpol23 ,data.frame(x=Xtest.w23,y=Ytest.w23))
+risqueclassif.svmpol23 = mean(Ytestpred.svmpol23!=Ytest.w23)
+
+svmrad23 = svm(V8~., data=data.frame(Xtrain.w23,V8=Ytrain.w23),type="C-classification", kernel="radial")
+Ytestpred.svmrad23=predict(svmrad23 ,data.frame(x=Xtest.w23,y=Ytest.w23))
+risqueclassif.svmrad23 = mean(Ytestpred.svmrad23!=Ytest.w23)
+
+
